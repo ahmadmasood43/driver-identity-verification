@@ -53,6 +53,11 @@ def test_distance_decoding():
     np.testing.assert_array_equal(pts, [[[101, 52], [97, 46]]])
 
 
+def test_distance_decoding_empty():
+    assert distance_to_points(np.zeros((0, 2)), np.zeros((0, 10))).shape == (0, 5, 2)
+    assert distance_to_box(np.zeros((0, 2)), np.zeros((0, 4))).shape == (0, 4)
+
+
 def test_nms_drops_overlaps():
     boxes = np.array([[0, 0, 10, 10], [1, 1, 11, 11], [50, 50, 60, 60]], float)
     scores = np.array([0.8, 0.9, 0.7])

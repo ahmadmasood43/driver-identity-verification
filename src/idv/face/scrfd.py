@@ -27,7 +27,9 @@ def distance_to_box(centers: np.ndarray, d: np.ndarray) -> np.ndarray:
 
 
 def distance_to_points(centers: np.ndarray, d: np.ndarray) -> np.ndarray:
-    return np.repeat(centers[:, None, :], d.shape[1] // 2, axis=1) + d.reshape(len(d), -1, 2)
+    k = d.shape[1] // 2
+    # Explicit k: reshape(0, -1, 2) can't infer the axis when no anchor passed.
+    return np.repeat(centers[:, None, :], k, axis=1) + d.reshape(len(d), k, 2)
 
 
 def nms(boxes: np.ndarray, scores: np.ndarray, iou: float) -> list[int]:
