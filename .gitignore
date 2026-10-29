@@ -1,0 +1,20 @@
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+.env
+.claude/
+
+# Datasets and training outputs stay out of git; manifests under data/manifests do not.
+data/raw/
+data/interim/
+mlruns/
+outputs/
+multirun/
+*.pt
+*.onnx
