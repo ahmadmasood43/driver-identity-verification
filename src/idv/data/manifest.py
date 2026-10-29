@@ -29,10 +29,11 @@ def file_sha256(path: Path, chunk: int = 1 << 20) -> str:
 
 
 def build(root: Path, files: Iterable[Path]) -> list[Entry]:
+    """Entries for `files` (absolute or relative to the cwd), which must sit under `root`."""
+    root = Path(root).resolve()
     entries = []
     for f in files:
-        f = Path(f)
-        full = f if f.is_absolute() else root / f
+        full = Path(f).resolve()
         entries.append(
             Entry(full.relative_to(root).as_posix(), file_sha256(full), full.stat().st_size)
         )

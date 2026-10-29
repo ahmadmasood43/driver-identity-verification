@@ -1,4 +1,5 @@
 import subprocess
+from pathlib import Path
 
 import pytest
 
@@ -23,6 +24,21 @@ def test_manifest_roundtrip_and_verify(tmp_path):
     (root / "y.jpg").write_bytes(b"yyz")
     (root / "a" / "x.jpg").unlink()
     assert manifest.verify(root, m) == ["a/x.jpg", "y.jpg"]
+
+
+def test_manifest_accepts_cwd_relative_paths(tmp_path, monkeypatch):
+    (tmp_path / "models").mkdir()
+    (tmp_path / "models" / "m.onnx").write_bytes(b"w")
+    monkeypatch.chdir(tmp_path)
+    root = Path("models")
+    assert [e.path for e in manifest.build(root, [root / "m.onnx"])] == ["m.onnx"]
+
+
+def test_manifest_rejects_files_outside_root(tmp_path):
+    (tmp_path / "root").mkdir()
+    (tmp_path / "other.bin").write_bytes(b"x")
+    with pytest.raises(ValueError):
+        manifest.build(tmp_path / "root", [tmp_path / "other.bin"])
 
 
 def test_manifest_hash_changes_with_content(tmp_path):
