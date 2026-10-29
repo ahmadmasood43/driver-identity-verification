@@ -32,6 +32,7 @@ the Pascal card this is developed on. CI and the API image skip it.
 ```
 make sync              # create .venv
 make test              # unit tests
+make models            # fetch face detector + embedder weights, check checksums
 uv run pytest -m gpu   # real-model tests, needs CUDA and models/
 make test-integration  # starts Redis + Postgres, runs API/worker tests
 make up                # full stack: api :8000, prometheus :9090, grafana :3000, mlflow :5000
