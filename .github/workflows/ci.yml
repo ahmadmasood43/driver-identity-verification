@@ -21,12 +21,15 @@ jobs:
           POSTGRES_DB: idv
         ports: ["5432:5432"]
         options: --health-cmd "pg_isready -U idv" --health-interval 5s --health-retries 10
+    env:
+      # Sync once without the GPU stack; stop `uv run` from pulling it back in.
+      UV_NO_SYNC: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
-      - run: uv sync --locked
+      - run: uv sync --locked --no-group ml
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run pytest -m "not gpu"
