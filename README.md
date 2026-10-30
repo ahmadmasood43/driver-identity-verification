@@ -16,6 +16,7 @@ models come next. No results yet. The evaluation is pre-registered in
 src/idv/eval/       metrics (FAR/FRR, ISO 30107-3 PAD errors), subject-level bootstrap
 src/idv/data/       data manifests, seeded subject-disjoint splits, demographic bins
 src/idv/face/       alignment, SCRFD detector, ArcFace embedder, verification pairs
+src/idv/synth/      renders a real face into a MIDV-2020 template as the ID photo
 src/idv/tracking.py MLflow runs tagged with git SHA and manifest hashes
 src/idv/pipeline/   model pipeline interface; fake implementation for now
 src/idv/service/    FastAPI app, arq worker, Redis blob store, Postgres records
@@ -47,3 +48,14 @@ curl localhost:8000/v1/verifications/<id>
 
 Images are kept only in Redis (persistence off) and deleted once a decision is
 written. Postgres stores decisions, scores and reason codes, not images.
+
+## Data and models
+
+- [MIDV-2020](ftp://smartengines.com/midv-2020/) (CC BY-SA 2.5): identity document
+  templates, photos, scans and video clips. Its template portraits are synthetic faces
+  from [Generated Photos](https://generated.photos/); the renderer replaces them, and no
+  rendered images are published. `make midv` unpacks the archives and checks them
+  against `data/manifests/`.
+- Face detection and embedding use insightface's `buffalo_l` weights (SCRFD-10G and an
+  ArcFace ResNet-50 trained on WebFace600K, a dataset scraped from the web). They are
+  licensed for non-commercial research only and are not retrained here.
