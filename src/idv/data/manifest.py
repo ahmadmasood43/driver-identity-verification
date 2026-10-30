@@ -66,3 +66,31 @@ def verify(root: Path, path: Path) -> list[str]:
 
 def manifest_hash(path: Path) -> str:
     return file_sha256(path)
+
+
+def main(argv: list[str] | None = None) -> None:
+    import argparse
+
+    ap = argparse.ArgumentParser(prog="python -m idv.data.manifest")
+    sub = ap.add_subparsers(dest="cmd", required=True)
+    b = sub.add_parser("build", help="manifest every file under ROOT")
+    b.add_argument("root", type=Path)
+    b.add_argument("out", type=Path)
+    v = sub.add_parser("verify", help="check ROOT against a manifest")
+    v.add_argument("root", type=Path)
+    v.add_argument("manifest", type=Path)
+    args = ap.parse_args(argv)
+
+    if args.cmd == "build":
+        files = sorted(p for p in args.root.rglob("*") if p.is_file())
+        write(build(args.root, files), args.out)
+        print(f"{len(files)} files -> {args.out}")
+    else:
+        bad = verify(args.root, args.manifest)
+        for p in bad:
+            print(f"MISMATCH {p}")
+        raise SystemExit(1 if bad else 0)
+
+
+if __name__ == "__main__":
+    main()
